@@ -26,15 +26,23 @@ def GenerateEulerScheme(x, y, z, timeArray, N, dt = 0.01, sigma = 10, rho = 28, 
     return x, y, z, timeArray
 
 #Generates the Lorenz system with the classical Euler scheme but adds a perturbation at a given index
-def AddPerturbationEulerScheme(x, y, z, timeArray, N, index, perturbation, dt = 0.01, sigma = 10, rho = 28, beta = 8/3):
+def AddPerturbationEulerScheme(x, y, z, timeArray, N, index, perturbation, variable = "x", dt = 0.01, sigma = 10, rho = 28, beta = 8/3):
     for i in range(N-1):
         x[i + 1] = x[i] + forcingX(x[i],y[i],sigma) * dt
         y[i + 1] = y[i] + forcingY(x[i],y[i],z[i],rho) * dt
         z[i + 1] = z[i] + forcingZ(x[i],y[i],z[i],beta) * dt
         timeArray[i + 1] = timeArray[i] + dt
-
+        
         if i == index - 1:
-            x[index] = x[index] + perturbation
+            if (variable == "x"):
+                x[index] = x[index] + perturbation
+            elif (variable == "y"):
+                y[index] = y[index] + perturbation
+            elif (variable == "z"):
+                z[index] = z[index] + perturbation
+            else:
+                print("Error: No dimension found")
+                return
 
     return x, y, z, timeArray
 
@@ -46,7 +54,7 @@ def GenerateCentralScheme(x, y, z, timeArray, N, dt = 0.01, sigma = 10, rho = 28
         timeArray[i + 1] = timeArray[i] + dt
     return x, y, z, timeArray
 
-# TODO: Fix function below. We do not define tau to be the time when two series diverge but when one saturates with error.
+# TODO: Fix function below. We changed the definition of tau to be the time when two series diverge but when one saturates with error.
 # This function is for determining the time value tau when two time series diverge
 def findTau(x1, x2, timeArray, N, error):
     i = 0
@@ -83,7 +91,7 @@ zNorm = z/np.std(z)
 '''
 # Time series for rate of convection
 plt.figure()
-plt.plot(timeArray1, x, color = "r")
+plt.plot(timeArray, x, color = "r")
 plt.title("Graph of Convection Rate Over Time")
 plt.xlabel("Time")
 plt.ylabel("Convection Rate")
@@ -94,7 +102,7 @@ plt.show()
 '''
 # Time series for rate of convection
 plt.figure()
-plt.plot(timeArray1, y, color = "b")
+plt.plot(timeArray, y, color = "b")
 plt.title("Graph of Horizontonal Temperature Difference Over Time")
 plt.xlabel("Time")
 plt.ylabel("Convection Rate")
@@ -105,7 +113,7 @@ plt.show()
 '''
 # Time series for rate of convection
 plt.figure()
-plt.plot(timeArray1, z, color = "g")
+plt.plot(timeArray, z, color = "g")
 plt.title("Graph of Convection Rate Over Time")
 plt.xlabel("Time")
 plt.ylabel("Convection Rate")
@@ -138,7 +146,7 @@ for i in range(len(timeArray)):
 f.close()
 '''
 
-
+'''
 #Creates Normalized Data For The Lorenz System
 f = open("lorenzNormData.txt", "w")
 
@@ -147,3 +155,4 @@ for i in range(len(timeArray)):
     f.write("\n")
 
 f.close()
+'''
