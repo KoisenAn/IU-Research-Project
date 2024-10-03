@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 #python -m pip install -U numpy
 import numpy as np
+import math
 
 def forcingX(x,y,sigma):
     f = sigma * (y - x)
@@ -28,12 +29,7 @@ def GenerateEulerScheme(x, y, z, timeArray, N, dt = 0.01, sigma = 10, rho = 28, 
 #Generates the Lorenz system with the classical Euler scheme but adds a perturbation at a given index
 def AddPerturbationEulerScheme(x, y, z, timeArray, N, index, perturbation, variable = "x", dt = 0.01, sigma = 10, rho = 28, beta = 8/3):
     for i in range(N-1):
-        x[i + 1] = x[i] + forcingX(x[i],y[i],sigma) * dt
-        y[i + 1] = y[i] + forcingY(x[i],y[i],z[i],rho) * dt
-        z[i + 1] = z[i] + forcingZ(x[i],y[i],z[i],beta) * dt
-        timeArray[i + 1] = timeArray[i] + dt
-        
-        if i == index - 1:
+        if i == index:
             if (variable == "x"):
                 x[index] = x[index] + perturbation
             elif (variable == "y"):
@@ -43,6 +39,11 @@ def AddPerturbationEulerScheme(x, y, z, timeArray, N, index, perturbation, varia
             else:
                 print("Error: No dimension found")
                 return
+
+        x[i + 1] = x[i] + forcingX(x[i],y[i],sigma) * dt
+        y[i + 1] = y[i] + forcingY(x[i],y[i],z[i],rho) * dt
+        z[i + 1] = z[i] + forcingZ(x[i],y[i],z[i],beta) * dt
+        timeArray[i + 1] = timeArray[i] + dt
 
     return x, y, z, timeArray
 
@@ -54,13 +55,34 @@ def GenerateCentralScheme(x, y, z, timeArray, N, dt = 0.01, sigma = 10, rho = 28
         timeArray[i + 1] = timeArray[i] + dt
     return x, y, z, timeArray
 
-# TODO: Fix function below. We changed the definition of tau to be the time when two series diverge but when one saturates with error.
-# This function is for determining the time value tau when two time series diverge
-def findTau(x1, x2, timeArray, N, error):
+# NOTE: Later in the project, we changed the definition of tau be when the difference of error of two systems saturates.
+
+# This function is for determining the time value tau when two time series diverge for a single variable
+def findTauSingleVariable(x1, x2, timeArray, N, error = 1):
     i = 0
     while abs(x2[i]-x1[i]) < error:
         i += 1
+        if i == N:
+            print("Error! Tau Not Found")
+            return False
     return timeArray[i]
+
+# This function is for determining the time value tau when two systems diverge at a given error
+def findTau(baseX, baseY, baseZ, perX, perY, perZ, timeArray, N, error = 1):
+    i = 0
+    differenceData = []
+
+    difference = math.sqrt((baseX[i]-perX[i])**2 + (baseY[i]-perY[i])**2 + (baseZ[i]-perZ[i])**2)
+    while difference < error:
+        i += 1
+        if i == N:
+            print("Error! Tau Not Found")
+            return False, differenceData
+        
+        differenceData.append(difference)
+        difference = math.sqrt((baseX[i]-perX[i])**2 + (baseY[i]-perY[i])**2 + (baseZ[i]-perZ[i])**2)
+
+    return timeArray[i], np.array(differenceData)
 
 # Time steps/Increment values
 dt = 0.01
