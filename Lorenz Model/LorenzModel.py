@@ -55,7 +55,31 @@ def GenerateCentralScheme(x, y, z, timeArray, N, dt = 0.01, sigma = 10, rho = 28
         timeArray[i + 1] = timeArray[i] + dt
     return x, y, z, timeArray
 
-# NOTE: Later in the project, we changed the definition of tau be when the difference of error of two systems saturates.
+def normalize(x, y = None, z = None):
+    if (y == None and z == None):
+        return x/np.std(x)
+    elif (z == None):
+        return x/np.std(x), y/np.std(y)
+    else:
+        return x/np.std(x), y/np.std(y), z/np.std(z)
+    
+def findSaturationTime(x, timeArray, error = 0.01, range = 1000, overError = 1):
+    i = 0
+    pastValues = []
+    while True:
+        i += 1
+        pastValues.append(x[i])
+        if (len(pastValues) == range):
+            
+            del pastValues[0]
+
+            average = sum(pastValues)/len(pastValues)
+
+            if (average > overError and abs(x[i+1]-average) < error):
+                return timeArray[i]
+            
+        if (i == len(x)-2):
+            return "Error! Saturation Time Not Found"
 
 # This function is for determining the time value tau when two time series diverge for a single variable
 def findTauSingleVariable(x1, x2, timeArray, N, error = 1):

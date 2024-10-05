@@ -137,14 +137,16 @@ diffX = abs(baseModelX - perModelX)
 diffY = abs(baseModelY - perModelY)
 diffZ = abs(baseModelZ - perModelZ)
 
+error = 1
 
+# Finding the time tau for a single variable where tau is the time the pertrubed model has diverged from the original model by a set error
+tauX = LorenzModel.findTauSingleVariable(baseModelX, perModelX, baseTimeArray, N, error = error)
+tauY = LorenzModel.findTauSingleVariable(baseModelY, perModelY, baseTimeArray, N, error = error)
+tauZ = LorenzModel.findTauSingleVariable(baseModelZ, perModelZ, baseTimeArray, N, error = error)
 
-# Finding Tau
-tauX = LorenzModel.findTauSingleVariable(baseModelX, perModelX, baseTimeArray, N, error = 1)
-tauY = LorenzModel.findTauSingleVariable(baseModelY, perModelY, baseTimeArray, N, error = 1)
-tauZ = LorenzModel.findTauSingleVariable(baseModelZ, perModelZ, baseTimeArray, N, error = 1)
-
-tau, errorValues = LorenzModel.findTau(baseModelX, baseModelY, baseModelZ, perModelX, perModelY, perModelZ, baseTimeArray, N, error = 0.1)
+# Finding the time tau for the whole system where tau is the time the pertrubed model has diverged from the original model by a set error
+error = 0.1
+tau, errorValues = LorenzModel.findTau(baseModelX, baseModelY, baseModelZ, perModelX, perModelY, perModelZ, baseTimeArray, N, error = error)
 
 '''
 print(f"Tau X: {tauX}")
@@ -183,7 +185,7 @@ plt.show()
 '''
 
 #Plotting General Difference
-'''
+
 Range = 4000
 plt.figure()
 plt.plot(perTimeArray[:Range], diffX[:Range], color = (1, 0, 0, 0.5), label = "x")
@@ -191,7 +193,7 @@ plt.plot(perTimeArray[:Range], diffY[:Range], color = (0, 0, 0.8, 0.5), label = 
 plt.plot(perTimeArray[:Range], diffZ[:Range], color = (0, 0.7, 0, 0.5), label = "z")
 plt.legend()
 plt.show()
-'''
+
 
 # Error Graph For Given Lead Time
 
