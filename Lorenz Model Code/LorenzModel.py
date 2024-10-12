@@ -2,6 +2,8 @@
 import matplotlib.pyplot as plt
 #python -m pip install -U numpy
 import numpy as np
+#python -m pip install pandas
+import pandas as pd
 import math
 
 def forcingX(x,y,sigma):
@@ -16,7 +18,7 @@ def forcingZ(x,y,z,beta):
     f = x * y - beta * z
     return f
 
-#Generates the Lorenz system with the classical Euler scheme
+# Generates the Lorenz system with the classical Euler scheme
 def GenerateEulerScheme(x, y, z, timeArray, N, dt = 0.01, sigma = 10, rho = 28, beta = 8/3):
 
     for i in range(N-1):
@@ -24,9 +26,10 @@ def GenerateEulerScheme(x, y, z, timeArray, N, dt = 0.01, sigma = 10, rho = 28, 
         y[i + 1] = y[i] + forcingY(x[i],y[i],z[i],rho) * dt
         z[i + 1] = z[i] + forcingZ(x[i],y[i],z[i],beta) * dt
         timeArray[i + 1] = timeArray[i] + dt
+
     return x, y, z, timeArray
 
-#Generates the Lorenz system with the classical Euler scheme but adds a perturbation at a given index
+# Generates the Lorenz system with the classical Euler scheme but adds a perturbation at a given index
 def AddPerturbationEulerScheme(x, y, z, timeArray, N, index, perturbation, variable = "x", dt = 0.01, sigma = 10, rho = 28, beta = 8/3):
     for i in range(N-1):
         if i == index:
@@ -62,7 +65,9 @@ def normalize(x, y = None, z = None):
         return x/np.std(x), y/np.std(y)
     else:
         return x/np.std(x), y/np.std(y), z/np.std(z)
-    
+
+# This function is for finding saturation time
+# This function only works when there are many data points and the time step is small
 def findSaturationTime(x, timeArray, error = 0.01, range = 1000, overError = 1):
     i = 0
     pastValues = []

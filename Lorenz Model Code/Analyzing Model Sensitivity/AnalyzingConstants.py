@@ -13,7 +13,7 @@ parent_dir = os.path.dirname(current_dir)
 
 import sys         
  
-# appending the directory of mod.py 
+# appending the directory of LorenzModel.py 
 # in the sys.path list
 sys.path.append(parent_dir) 
 
