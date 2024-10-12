@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 #python -m pip install -U numpy
 import numpy as np
 import math
-from random import sample
 
 import os
 
