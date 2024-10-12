@@ -22,6 +22,7 @@ from sklearn import preprocessing
 from sklearn import model_selection
 from sklearn.linear_model import LinearRegression
 from sklearn import svm
+import sklearn.metrics as metrics
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 
@@ -864,7 +865,47 @@ def RNN_2Layer_128Dense_LSTM_FNN_IncreasingLayers_AdamOp(input, fullPointPred=Fa
     return model
 
 '''
-#Testing
+#
+# Testing
+#
 
-model = FNN_Basic(input, fullPointPred=False)
+# Finding Data File
+
+import os
+
+# Get the current script's directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct the path to the file in the parent directory
+parent_dir = os.path.dirname(current_dir)
+
+import sys         
+ 
+# appending the directory of LorenzModel.py 
+# in the sys.path list
+sys.path.append(parent_dir+"\\Data\\Lorenz Model Data") 
+
+# Loading Data File
+file = open(parent_dir+"\\Data\\Lorenz Model Data\\lorenzNormData.txt","r")
+normArray = np.loadtxt(file)
+
+# Creating Inputs and Labels For Training Model
+trainInputs, testInputs, trainLabels, testLabels = splitData(normArray, 300, 0.05, 100000)
+
+trainLabelX = trainLabels.drop(["LabelY","LabelZ"], axis = 1)
+
+testLabelX = testLabels.drop(["LabelY","LabelZ"], axis = 1)
+
+# Creates Model
+model = FNN_Basic(trainInputs.to_numpy(), fullPointPred=False)
+
+# Trains Model
+model.fit(trainInputs.to_numpy(), trainLabelX.to_numpy()[:,0], epochs=100, batch_size=512, verbose = 1)
+
+# Prediction
+predicted = model.predict(testInputs.to_numpy(), verbose = 0)
+
+errorMSE = metrics.mean_squared_error(predicted, testLabelX)
+
+print(errorMSE)
 '''
