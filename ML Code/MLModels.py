@@ -862,3 +862,9 @@ def RNN_2Layer_128Dense_LSTM_FNN_IncreasingLayers_AdamOp(input, fullPointPred=Fa
         model.add(Dense(units = 1))
     model.compile(optimizer='adam', loss='mse', metrics=['mae'])
     return model
+
+'''
+#Testing
+
+model = FNN_Basic(input, fullPointPred=False)
+'''
