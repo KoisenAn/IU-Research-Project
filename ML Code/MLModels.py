@@ -97,23 +97,23 @@ def SVR_Norm(data, fullPointPred):
     return model
 
 def SVR_RBF(data, fullPointPred):
-    model = svm.SVR(kernel='rbf')
+    model = svm.SVR(kernel='rbf', max_iter=1000)
     return model
 
 def SVR_Linear(data, fullPointPred):
-    model = svm.SVR(kernel='linear')
+    model = svm.SVR(kernel='linear', max_iter=1000)
     return model
 
 def SVR_Poly(data, fullPointPred):
-    model = svm.SVR(kernel='poly')
+    model = svm.SVR(kernel='poly', max_iter=1000)
     return model
 
 def SVR_Sigmoid(data, fullPointPred):
-    model = svm.SVR(kernel='sigmoid')
+    model = svm.SVR(kernel='sigmoid', max_iter=1000)
     return model
 
 def SVR_Precomputed(data, fullPointPred):
-    model = svm.SVR(kernel='precomputed')
+    model = svm.SVR(kernel='precomputed', max_iter=1000)
     return model
 
 #
@@ -491,8 +491,7 @@ def FNN_IncreasingLayers512_AdamOp_Dropout(input, fullPointPred=False):
 
 def RNN_Basic_SIMPLE(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(SimpleRNN(32, return_sequences=False))
+    model.add(SimpleRNN(128, input_shape=(input.shape[1:]), return_sequences=False))
     model.add(Dropout(0.2))
     model.add(BatchNormalization()) 
     if (fullPointPred):
@@ -504,8 +503,7 @@ def RNN_Basic_SIMPLE(input, fullPointPred=False):
 
 def RNN_Basic_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=True))
+    model.add(LSTM(128, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.2))
     model.add(BatchNormalization()) 
     model.add(LSTM(32, return_sequences=False))
@@ -522,7 +520,6 @@ def RNN_Basic_LSTM(input, fullPointPred=False):
 # Example of use: model = RNN_Custom(data, RNNLayers = [(32, 0.1), (64, 0.2), (128, 0.2)], DNNList = [(64, "relu", 0.1), (64, "relu", 0.1), (32, "relu", 0.1)], fullPointPred = True)
 def RNN_Custom(input, RNNLayers: list, FNNLayers: list, fullPointPred = False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
     
     if (len(RNNLayers) > 1):
         for infoTuple in RNNLayers[:-1]:
@@ -550,8 +547,7 @@ def RNN_Custom(input, RNNLayers: list, FNNLayers: list, fullPointPred = False):
 
 def RNN_2Layer_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=True))
+    model.add(LSTM(32, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.2))
     model.add(BatchNormalization()) 
     model.add(LSTM(32, return_sequences=False))
@@ -566,8 +562,7 @@ def RNN_2Layer_LSTM(input, fullPointPred=False):
 
 def RNN_3Layer_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=True))
+    model.add(LSTM(32, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     model.add(LSTM(32, return_sequences=False))
@@ -582,8 +577,7 @@ def RNN_3Layer_LSTM(input, fullPointPred=False):
 
 def RNN_4Layer_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=True))
+    model.add(LSTM(32, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     model.add(LSTM(32, return_sequences=True))
@@ -604,8 +598,7 @@ def RNN_4Layer_LSTM(input, fullPointPred=False):
 
 def RNN_5Layer_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=True))
+    model.add(LSTM(32, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     model.add(LSTM(32, return_sequences=True))
@@ -629,8 +622,7 @@ def RNN_5Layer_LSTM(input, fullPointPred=False):
 
 def RNN_1Layer_LSTM_1Layer_FNN(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=False))
+    model.add(LSTM(32, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.2))
     model.add(BatchNormalization()) 
     model.add(Dense(32, activation='relu'))
@@ -644,8 +636,7 @@ def RNN_1Layer_LSTM_1Layer_FNN(input, fullPointPred=False):
 
 def RNN_1Layer_LSTM_2Layer_FNN(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=False))
+    model.add(LSTM(32, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.2))
     model.add(BatchNormalization()) 
     model.add(Dense(32, activation='relu'))
@@ -661,8 +652,7 @@ def RNN_1Layer_LSTM_2Layer_FNN(input, fullPointPred=False):
 
 def RNN_1Layer_LSTM_3Layer_FNN(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=False))
+    model.add(LSTM(32, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.2))
     model.add(BatchNormalization()) 
     model.add(Dense(32, activation='relu'))
@@ -680,8 +670,7 @@ def RNN_1Layer_LSTM_3Layer_FNN(input, fullPointPred=False):
 
 def RNN_2Layer_LSTM_1Layer_FNN(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=True))
+    model.add(LSTM(32, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.1))
     model.add(BatchNormalization())     
     model.add(LSTM(32, return_sequences=False))
@@ -698,8 +687,7 @@ def RNN_2Layer_LSTM_1Layer_FNN(input, fullPointPred=False):
 
 def RNN_2Layer_LSTM_2Layer_FNN(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=True))
+    model.add(LSTM(32, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.1))
     model.add(BatchNormalization())     
     model.add(LSTM(32, return_sequences=False))
@@ -718,8 +706,7 @@ def RNN_2Layer_LSTM_2Layer_FNN(input, fullPointPred=False):
 
 def RNN_2Layer_LSTM_3Layer_FNN(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(32, return_sequences=True))
+    model.add(LSTM(32, input_shape=(input.shape[1:]), return_sequences=True))
     model.add(Dropout(0.1))
     model.add(BatchNormalization())     
     model.add(LSTM(32, return_sequences=False))
@@ -742,8 +729,7 @@ def RNN_2Layer_LSTM_3Layer_FNN(input, fullPointPred=False):
 
 def RNN_64Dense_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(64, return_sequences=False))
+    model.add(LSTM(64, input_shape=(input.shape[1:]), return_sequences=False))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     if (fullPointPred):
@@ -755,8 +741,7 @@ def RNN_64Dense_LSTM(input, fullPointPred=False):
 
 def RNN_128Dense_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(128, return_sequences=False))
+    model.add(LSTM(128, input_shape=(input.shape[1:]), return_sequences=False))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     if (fullPointPred):
@@ -768,8 +753,7 @@ def RNN_128Dense_LSTM(input, fullPointPred=False):
 
 def RNN_256Dense_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(256, return_sequences=False))
+    model.add(LSTM(256, input_shape=(input.shape[1:]), return_sequences=False))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     if (fullPointPred):
@@ -781,8 +765,7 @@ def RNN_256Dense_LSTM(input, fullPointPred=False):
 
 def RNN_512Dense_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(512, return_sequences=True))
+    model.add(LSTM(512, input_shape=(input.shape[1:]), return_sequences=False))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     if (fullPointPred):
@@ -796,8 +779,7 @@ def RNN_512Dense_LSTM(input, fullPointPred=False):
 
 def RNN_AdamOp_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(128, return_sequences=False))
+    model.add(LSTM(128, input_shape=(input.shape[1:]), return_sequences=False))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     if (fullPointPred):
@@ -809,8 +791,7 @@ def RNN_AdamOp_LSTM(input, fullPointPred=False):
 
 def RNN_SGDOp_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(128, return_sequences=False))
+    model.add(LSTM(128, input_shape=(input.shape[1:]), return_sequences=False))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     if (fullPointPred):
@@ -822,8 +803,7 @@ def RNN_SGDOp_LSTM(input, fullPointPred=False):
 
 def RNN_AdaDeltaOp_LSTM(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(128, return_sequences=False))
+    model.add(LSTM(128, input_shape=(input.shape[1:]), return_sequences=False))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     if (fullPointPred):
@@ -837,8 +817,7 @@ def RNN_AdaDeltaOp_LSTM(input, fullPointPred=False):
 
 def RNN_2Layer_128Dense_LSTM_FNN_IncreasingLayers_AdamOp(input, fullPointPred=False):
     model = keras.Sequential()
-    model.add(keras.Input(shape=(np.shape(input)[1],)))
-    model.add(LSTM(128, return_sequences=True))
+    model.add(LSTM(128, input_shape=(input.shape[1:]), return_sequences=False))
     model.add(Dropout(0.1))
     model.add(BatchNormalization()) 
     model.add(LSTM(128, return_sequences=False))

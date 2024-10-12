@@ -66,12 +66,12 @@ plt.show()
 #
 
 # Setting Model Type
-modelType = getattr(MLModels, "LinReg")
+modelType = getattr(MLModels, "RNN_Basic_SIMPLE")
 
 # Lead times to run
 # T = [0.1, 0.2, 0.3, 0.4, 0.5] + [n for n in range(1,18)]
-T = [n/10 for n in range(1, 100)]
-# T = [1, 2, 3]
+# T = [n/10 for n in range(1, 100)]
+T = [1, 2, 3]
 
 # Sets individual prediction or entire point prediction
 fullPointPrediction = False
@@ -85,6 +85,10 @@ mseList = []
 
 # Data Size
 dataSize = 10000
+testSize = 10000
+
+# Sequence Length For RNNs
+SEQ_LEN = 10
 
 # Creating folder to store files
 # TODO: Make seperate files for full point and single variable prediction
@@ -113,17 +117,32 @@ if not os.path.exists(path):
 else:
     clearDirectory(path)
 
+# Saving Models
+if (not (modelType.__name__.startswith("SVR") or modelType.__name__.startswith("Lin"))):
+    if (modelType.__name__.startswith("FNN")):
+        modelsPath = parent_dir + f"\\Data\\ML Models Data\\NN Data\\FNN Data\\Direct Prediction\\{modelType.__name__} Data\\Models"
+    else:
+        modelsPath = parent_dir + f"\\Data\\ML Models Data\\NN Data\\RNN Data\\Direct Prediction\\{modelType.__name__} Data\\Models"
+    if not os.path.exists(modelsPath):
+        os.makedirs(modelsPath)
+    else:
+        clearDirectory(modelsPath)
 
 for tau in T:
 
     print(f"Running lead time {tau}...")
+    
+    shift = int(tau/0.01) # 0.01 is the time step of the file loaded
+
+    # Creating inputs and labels for training model
+    if modelType.__name__.startswith("RNN"):
+        trainInputs, _, trainLabels, _ = MLModels.splitDataSequentially(normArray, shift, SEQ_LEN=SEQ_LEN, test_split=0.05, dataSize=dataSize)
+        _, testInputs, _, testLabels = MLModels.splitDataSequentially(normArray[dataSize:], shift, SEQ_LEN=SEQ_LEN, test_split=0.95, dataSize=testSize)
+    else:
+        trainInputs, _, trainLabels, _ = MLModels.splitData(normArray, shift, 0.05, dataSize=dataSize)
+        _, testInputs, _, testInputs = MLModels.splitData(normArray[dataSize:], shift, 0.95, dataSize=testSize)
 
     if not fullPointPrediction:
-
-        shift = int(tau/0.01) # 0.01 is the time step of the file loaded
-
-        # Creating inputs and labels for training model
-        trainInputs, testInputs, trainLabels, testLabels = MLModels.splitData(normArray, shift, 0.05, dataSize=dataSize)
 
         # Creating labels for each component during both training and verification
         trainLabelX = trainLabels.drop(["LabelY","LabelZ"],axis = 1)
@@ -143,20 +162,19 @@ for tau in T:
         for labelPair in [(trainLabelX, testLabelX, "X"), (trainLabelY, testLabelY, "Y"), (trainLabelZ, testLabelZ, "Z")]:
 
             # Creates Model
-            model = modelType(trainInputs.to_numpy(), fullPointPred=fullPointPrediction)
+            model = modelType(trainInputs, fullPointPred=fullPointPrediction)
 
             # Trains Model
-
             if modelType.__name__.startswith("SVR") or modelType.__name__.startswith("Lin"):
-                model.fit(trainInputs.to_numpy(), labelPair[0].to_numpy())
+                model.fit(trainInputs, labelPair[0])
             else:
-                model.fit(trainInputs.to_numpy(), labelPair[0].to_numpy(), epochs=100, batch_size=512, verbose = 1) # Verbose is for progress checking. Set value to 1 to turn on
+                model.fit(trainInputs, labelPair[0], epochs=100, batch_size=512, verbose = 1) # Verbose is for progress checking. Set value to 1 to turn on
 
             # Prediction
             if modelType.__name__.startswith("SVR") or modelType.__name__.startswith("Lin"):
-                predicted = model.predict(testInputs.to_numpy())
+                predicted = model.predict(testInputs)
             else:
-                predicted = model.predict(testInputs.to_numpy(), verbose = 0) # Verbose is for progress checking. Set value to 1 to turn on
+                predicted = model.predict(testInputs, verbose = 0) # Verbose is for progress checking. Set value to 1 to turn on
 
 
             errorMSE = MLModels.metrics.mean_squared_error(predicted, labelPair[1])
@@ -170,10 +188,7 @@ for tau in T:
 
             # Saving models
             if (not (modelType.__name__.startswith("SVR") or modelType.__name__.startswith("Lin"))):
-                path = parent_dir + f"\\Data\\ML Models Data\\SVR Data\\Direct Prediction\\{modelType.__name__} Data\\Models"
-                clearDirectory(path)
-
-                model.save(f"{path}//{modelType.__name__}_{tau}_{labelPair[2]}_Model.keras")
+                model.save(f"{modelsPath}//{modelType.__name__}_{tau}_{labelPair[2]}_Model.keras")
 
 
         mseList.append(mseTuple)
@@ -181,18 +196,14 @@ for tau in T:
         predictedHistories = np.array(predictedHistories).reshape(len(predictedHistories[0]), 3)
 
     else:
-        
-        shift = int(tau/0.01) # 0.01 is the time step of the file loaded
 
-        # Creating inputs and labels for training model
-        trainInputs, testInputs, trainLabels, testLabels = MLModels.splitData(normArray, shift, 0.05, dataSize=dataSize)
-
-        model = modelType(trainInputs.to_numpy(), fullPointPred=fullPointPrediction)
+        # Creates Model
+        model = modelType(trainInputs, fullPointPred=fullPointPrediction)
         
-        model.fit(trainInputs.to_numpy(), trainLabels.to_numpy(), epochs=100, batch_size=512, verbose = 1) # Verbose is for progress checking. Set value to 1 to turn on
+        model.fit(trainInputs, trainLabels, epochs=100, batch_size=512, verbose = 1) # Verbose is for progress checking. Set value to 1 to turn on
 
         # Prediction
-        predicted = model.predict(testInputs.to_numpy(), verbose = 0)
+        predicted = model.predict(testInputs, verbose = 0)
 
         errorMSE = MLModels.metrics.mean_squared_error(predicted, testLabels)
 
@@ -202,7 +213,7 @@ for tau in T:
         mseList.append(errorMSE)
         
         # Saves Model For Further Use
-        model.save(f"{path}//{modelType.__name__}_{tau}_Model.keras")
+        model.save(f"{modelsPath}//{modelType.__name__}_{tau}_Model.keras")
 
     #print(errorMSE)
 
