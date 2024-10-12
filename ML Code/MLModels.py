@@ -92,27 +92,27 @@ def splitDataSequentially(data: list, leadTime: int, SEQ_LEN: int, test_split: f
 # SVR
 #
 
-def SVR():
+def SVR_Norm(data, fullPointPred):
     model = svm.SVR(max_iter=1000)
     return model
 
-def SVR_RBF():
+def SVR_RBF(data, fullPointPred):
     model = svm.SVR(kernel='rbf')
     return model
 
-def SVR_Linear():
+def SVR_Linear(data, fullPointPred):
     model = svm.SVR(kernel='linear')
     return model
 
-def SVR_Poly():
+def SVR_Poly(data, fullPointPred):
     model = svm.SVR(kernel='poly')
     return model
 
-def SVR_Sigmoid():
+def SVR_Sigmoid(data, fullPointPred):
     model = svm.SVR(kernel='sigmoid')
     return model
 
-def SVR_Precomputed():
+def SVR_Precomputed(data, fullPointPred):
     model = svm.SVR(kernel='precomputed')
     return model
 
@@ -120,12 +120,8 @@ def SVR_Precomputed():
 # Linear Regression
 #
 
-def LinReg():
+def LinReg(data, fullPointPred):
     model = LinearRegression()
-    return model
-
-def LinReg_L1():
-    model = LinearRegression(fit_intercept=True, normalize=False, copy_X=True, n_jobs=None)
     return model
 
 #
@@ -887,10 +883,10 @@ sys.path.append(parent_dir+"\\Data\\Lorenz Model Data")
 
 # Loading Data File
 file = open(parent_dir+"\\Data\\Lorenz Model Data\\lorenzNormData.txt","r")
-normArray = np.loadtxt(file)
+data = np.loadtxt(file)
 
 # Creating Inputs and Labels For Training Model
-trainInputs, testInputs, trainLabels, testLabels = splitData(normArray, 300, 0.05, 100000)
+trainInputs, testInputs, trainLabels, testLabels = splitData(data, 300, 0.05, 100000)
 
 trainLabelX = trainLabels.drop(["LabelY","LabelZ"], axis = 1)
 

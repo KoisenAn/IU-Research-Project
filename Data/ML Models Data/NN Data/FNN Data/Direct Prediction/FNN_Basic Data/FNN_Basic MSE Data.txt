@@ -1,0 +1,3 @@
+Full Point Prediction: Yes
+Lead Times: [1, 2, 3]
+MSE List: [0.5589666899214997, 0.8378443592637387, 0.9300668978695734]
