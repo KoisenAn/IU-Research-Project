@@ -79,6 +79,26 @@ def splitDataSequentially(data: list, leadTime: int, SEQ_LEN: int, test_split: f
     traindata, testdata, trainlabel, testlabel = model_selection.train_test_split(X, y, test_size = test_split, shuffle = False)
     return traindata, testdata, trainlabel, testlabel
 
+def splitDataIncrementalPrediction(data: list, shifts: list, test_split: float, dataSize: int, timeStep = 0.01):
+
+    df = pd.DataFrame(data = data[:dataSize], index = range(dataSize), columns = list("XYZ"))
+    df.fillna(-99999,inplace = True)
+    
+    for shift in shifts:
+        df[f"LabelX {shift}"] = df["X"].shift(-int(shift/timeStep))
+        df[f"LabelY {shift}"] = df["Y"].shift(-int(shift/timeStep))
+        df[f"LabelZ {shift}"] = df["Z"].shift(-int(shift/timeStep))
+    df.dropna(inplace = True)
+
+    inputs = df[["X","Y","Z"]]
+    labels = df.drop(["X","Y","Z"], axis = 1)
+
+    # Splits the data into training/validation.
+    # The data is shuffled by default (shuffle = true).
+    traindata, testdata, trainlabel, testlabel = model_selection.train_test_split(inputs, labels, test_size = 0.5, shuffle=False)
+    return traindata, testdata, trainlabel, testlabel
+
+
 # TODO: Implement a logistic regression algorithm to predict the saturation time.
 #def findSaturationTime():
 

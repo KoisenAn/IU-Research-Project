@@ -11,8 +11,7 @@ import pandas as pd
 import math
 import os
 
-# Finding Data File
-
+# Finding Data Filea
 import os
 
 # Get the current script's directory
@@ -140,7 +139,7 @@ for tau in T:
         _, testInputs, _, testLabels = MLModels.splitDataSequentially(normArray[dataSize:], shift, SEQ_LEN=SEQ_LEN, test_split=0.95, dataSize=testSize)
     else:
         trainInputs, _, trainLabels, _ = MLModels.splitData(normArray, shift, 0.05, dataSize=dataSize)
-        _, testInputs, _, testInputs = MLModels.splitData(normArray[dataSize:], shift, 0.95, dataSize=testSize)
+        _, testInputs, _, testLabels = MLModels.splitData(normArray[dataSize:], shift, 0.95, dataSize=testSize)
 
     if not fullPointPrediction:
 
@@ -200,6 +199,7 @@ for tau in T:
         # Creates Model
         model = modelType(trainInputs, fullPointPred=fullPointPrediction)
         
+        # Trains Model
         model.fit(trainInputs, trainLabels, epochs=100, batch_size=512, verbose = 1) # Verbose is for progress checking. Set value to 1 to turn on
 
         # Prediction
