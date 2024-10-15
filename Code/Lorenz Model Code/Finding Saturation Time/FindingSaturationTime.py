@@ -49,11 +49,11 @@ LorenzModel.GenerateEulerScheme(baseModelX, baseModelY, baseModelZ, baseTimeArra
 
 perturbationList = []
 
-
+'''
 #Adding Initial 0.1 Perturbation To X 
 
 perturbationList.append(("x", 0.1))
-
+'''
 
 '''
 #Adding Initial 0.1 Perturbation To Y 
@@ -85,11 +85,11 @@ perturbationList.append(("y", 0.01))
 perturbationList.append(("z", 0.01))
 '''
 
-'''
+
 #Adding Initial 0.001 Perturbation To X 
 
 perturbationList.append(("x", 0.001))
-'''
+
 
 '''
 #Adding Initial 0.001 Perturbation To Y 
