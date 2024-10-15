@@ -49,11 +49,11 @@ LorenzModel.GenerateEulerScheme(baseModelX, baseModelY, baseModelZ, baseTimeArra
 
 perturbationList = []
 
-'''
+
 #Adding Initial 0.1 Perturbation To X 
 
 perturbationList.append(("x", 0.1))
-'''
+
 
 '''
 #Adding Initial 0.1 Perturbation To Y 
@@ -103,9 +103,11 @@ perturbationList.append(("y", 0.001))
 perturbationList.append(("z", 0.001))
 '''
 
+'''
 #Adding Initial 0.0001 Perturbation To X 
 
 perturbationList.append(("x", 0.0001))
+'''
 
 '''
 #Adding Initial 0.00001 Perturbation To Y 
@@ -208,7 +210,6 @@ for perturbation in perturbationList:
     # Saving Data To Graph
     errList.append((perturbationList, averageXtrials, averageYtrials, averageZtrials, round(SaturationTimeX, 2), round(SaturationTimeY, 2), round(SaturationTimeZ, 2)))
 
-    '''
     # Saving Data To File
     f = open(f"FindingSaturationTimeData_{perturbation[0]}_{perturbation[1]}.txt", "w")
 
@@ -228,7 +229,6 @@ for perturbation in perturbationList:
         f.write("\n")
 
     f.close()
-    '''
 
 
 #
